@@ -1,0 +1,7 @@
+#!/bin/bash
+#
+# Submission script for Soft labels embedding program
+module load gcc/9.2.0 conda/2021.11-python3.9 cuda/9.1 cudnn/7.0-cuda-9.1
+conda env update -n better-mistakes -f environment.yml
+source activate better-mistakes
+# python model_train.py --loss hierarchical-cross-entropy --alpha 0.2

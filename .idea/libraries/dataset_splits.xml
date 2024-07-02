@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="dataset_splits">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dataset_splits/splits_inat19.zip!/" />
+      <root url="jar://$PROJECT_DIR$/dataset_splits/splits_tiered.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

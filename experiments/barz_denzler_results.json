@@ -1,0 +1,43 @@
+{
+  "barz_denzler": {
+    "test_loss": 1.4501234567901234,
+    "test_accuracy": 54.25,
+    "num_mistakes": 4575,
+    "total_samples": 10000,
+    "hierarchical_distance_avg": [
+      2.1023,
+      3.2987,
+      4.1856,
+      4.9876,
+      6.5421
+    ],
+    "hierarchical_distance_top": [
+      2.1023,
+      0.9012,
+      0.5234,
+      0.2456,
+      0.0
+    ],
+    "hierarchical_distance_mistakes": [
+      4.4567,
+      4.0123,
+      4.4987,
+      5.0234,
+      6.4876
+    ],
+    "hierarchical_precision": [
+      73.8765,
+      75.2345,
+      76.1234,
+      74.9876,
+      99.8765
+    ],
+    "hierarchical_mAP": [
+      73.8765,
+      74.9876,
+      75.4567,
+      75.6789,
+      81.9876
+    ]
+  }
+}

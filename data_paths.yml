@@ -1,0 +1,3 @@
+tiered-imagenet-224: '/mnt/c/Users/ibrah/Documents/stage/making-better-mistakes/tiered_imagenet'
+inaturalist19-224: '/mnt/c/Users/ibrah/Documents/stage/making-better-mistakes/inaturalist-2019-fgvc6'
+cifar100: '/home/bakhyate/projects/making-better-mistakes/making-better-mistakes/cifar-100'
