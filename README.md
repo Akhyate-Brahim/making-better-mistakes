@@ -13,7 +13,7 @@ Due to Barz and Denzler [2] already performing experiments on the Cifar dataset,
 The architecture used is one of the ones tested in Barz and Denzler [2]. It's a Plainet-11, a VGG-like architecture introduced by Barz and Denzler [3] adapted for quicker experiments compared to the other deep neural networks tested (resnet-x, pyramidnet...). 
 
 <p align="center">
-  <img src="./assets/plain-11.png" alt="model architecture">
+  <img src="./assets/plain-11.png" alt="model architecture" style="height: 50vh;">
 </p>
 
 While Barz and Denzler [2] achieved 74% accuracy on CIFAR-100, I've only managed around 55%. This difference is due to differences in the training process. Unlike Barz and Denzler's use of SGD with warm restarts and cosine annealing over 372 epochs, I trained with a fixed learning rate for only 25 epochs. This significant reduction in training time and lack of learning rate optimization likely accounts for the performance gap.
