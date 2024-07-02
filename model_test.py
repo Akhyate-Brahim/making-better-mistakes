@@ -6,28 +6,17 @@ from datetime import datetime
 # Parameter
 beta_values = [4, 8, 15, 20, 30]
 base_command = "python model_train.py --loss soft-labels"
-
-# Create a directory for storing results
 results_dir = f"hierarchical_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 os.makedirs(results_dir, exist_ok=True)
-
-# Dictionary to store all results
 all_results = {}
 
 for beta in beta_values:
     print(f"\nRunning with beta = {beta}")
     
-    # Create a unique output folder for this run
     out_folder = os.path.join(results_dir, f"beta_{beta}")
     os.makedirs(out_folder, exist_ok=True)
-    
-    # Construct the full command
     command = f"{base_command} --beta {beta} --out_folder {out_folder}"
-    
-    # Run the command
     subprocess.run(command, shell=True, check=True)
-    
-    # Read and store the results
     with open(os.path.join(out_folder, 'test_results.json'), 'r') as f:
         results = json.load(f)
     
