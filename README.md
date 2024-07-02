@@ -40,7 +40,7 @@ Key characteristics of this loss function include:
 Soft labels are implemented according to the formula [1]:
 
 <p align="center">
-  <img src="https://latex.codecogs.com/png.latex?\dpi{300}&space;\bg_white&space;y^{soft}_{A}(C)=\frac{\exp(-\beta&space;d(A,C))}{\sum_{B&space;\in&space;C}\exp(-\beta&space;d(B,C))}" title="Soft Labels Formula" />
+  <img src="https://latex.codecogs.com/png.latex?\dpi{60}&space;\bg_white&space;y^{soft}_{A}(C)=\frac{\exp(-\beta&space;d(A,C))}{\sum_{B&space;\in&space;C}\exp(-\beta&space;d(B,C))}" title="Soft Labels Formula" />
 </p>
 
 The soft labels approach uses a hyperparameter β to control label mass distribution. As β decreases from 30 to 4 (the experimental range), it shifts label mass away from the ground truth towards neighboring classes in the hierarchy. This affects the entropy of the label distribution, with β → ∞ corresponding to standard one-hot encoding, and β = 0 resulting in a uniform distribution across all classes.
