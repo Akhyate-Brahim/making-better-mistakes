@@ -65,6 +65,7 @@ where $B$ is a batch of $m$ images $I_b$ with labels $y_b$.
 <p align="center">
   <img src="./assets/plot1_top1_error_vs_top1_hdist.png" alt="top1_error_vs_top1_dist" style="height: 40vh;">
 </p>
+
 ![top5_20_error_vs_hdist](./assets/plot2_top1_error_vs_top5_20_hdist.png)
 
 All the hierarchical methods provide better results hierarchy-wise than the standard cross entropy. Let's examine the performance of each method:
