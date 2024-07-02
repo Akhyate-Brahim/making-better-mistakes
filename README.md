@@ -57,7 +57,7 @@ Compute class embeddings $\phi(c_i)$ such that $\phi(c_i)^T \phi(c_j) = s_G(c_i,
 
 Image-to-Embedding Mapping:
 Train a CNN $\psi$ to map images onto these class embeddings using a correlation loss:
-$L_{\text{CORR}}(B) = \frac{1}{m} \sum_{b=1}^m (1 - \psi(I_b)^T \phi(c_{y_b}))$,
+$$L_{\text{CORR}}(B) = \frac{1}{m} \sum_{b=1}^m (1 - \psi(I_b)^T \phi(c_{y_b}))$$,
 where $B$ is a batch of $m$ images $I_b$ with labels $y_b$.
 
 ## Results
