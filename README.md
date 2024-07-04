@@ -99,10 +99,6 @@ The Barz & Denzler method demonstrates a clear trade-off in hierarchical classif
 
 In summary, these results demonstrate that incorporating hierarchical information into the learning process can lead to significant improvements in the semantic quality of predictions, often with only a small trade-off in conventional accuracy metrics.
 
-## Appendix
-### Cifar wordNet based hierarchy
-![cifar hierarchy](./Cifar-Hierarchy/hierarchy.svg)
-
 ## References
 
 [1] **Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks**
@@ -119,3 +115,9 @@ In summary, these results demonstrate that incorporating hierarchical informatio
     Björn Barz and Joachim Denzler.
     International Conference on Pattern Recognition and Artificial Intelligence (ICPRAI), 2018.
     https://pub.inf-cv.uni-jena.de/pdf/Barz18:GoodTraining.pdf
+    
+## Appendix
+### Cifar wordNet based hierarchy
+![cifar hierarchy](./Cifar-Hierarchy/hierarchy.svg)
+
+
