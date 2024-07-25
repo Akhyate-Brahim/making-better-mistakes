@@ -43,6 +43,27 @@ Key benefits of both approaches:
 - Escaping local optima through periodic learning rate increases
 - Fine-tuning with small learning rates between peaks
 
+## Custom Loss
+
+
+The AncestralPenaltyLoss L(y, ŷ) for a batch of N samples is defined as:
+
+$$L(y, \hat{y}) = L_{CE}(y, \hat{y}) + \lambda \cdot \frac{1}{N} \sum_{i=1}^N D_A(y_i, \hat{y}_i)$$
+
+Where:
+- $L_{CE}(y, ŷ)$ is the standard cross-entropy loss
+- λ is the penalty factor (hyperparameter)
+- $D_A(y_i, ŷ_i)$ is the ancestral distance between the true class y_i and predicted class ŷ_i
+
+The ancestral distance D_A is calculated as:
+
+$$D_A(y_i, \hat{y_i}) = |\text{ancestors}(y_i) \cup \text{ancestors}(\hat{y_i})| - |\text{ancestors}(y_i) \cap \text{ancestors}(\hat{y_i})|$$
+
+Where:
+- ancestors(c) is the set of ancestors for class c in the hierarchy
+- |·| denotes the number of elements in a set
+
+This loss function adds a penalty based on the hierarchical distance between the true and predicted classes, encouraging the model to make predictions that are "closer" in the class hierarchy when exact classification fails.
 
 ## References
 
