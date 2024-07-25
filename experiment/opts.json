@@ -1,0 +1,13 @@
+{
+    "data_path": "./cifar-100",
+    "data_dir": "./data/",
+    "out_folder": "./experiment",
+    "batch_size": 128,
+    "epochs": 25,
+    "lr": 0.001,
+    "workers": 4,
+    "data": "cifar100",
+    "loss": "cross-entropy",
+    "alpha": 0.1,
+    "beta": 0
+}

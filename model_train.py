@@ -1,3 +1,9 @@
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to Agg
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -113,7 +119,7 @@ def calculate_hierarchical_metrics(outputs, targets, distances, classes):
     topK_hdist_mistakes = topK_hdist[mistakes_ids, :]
 
     topK_hsimilarity = 1 - topK_hdist / max_dist
-    
+
     best_hier_similarities = np.zeros((len(classes), len(classes)))
     for i in range(len(classes)):
         best_hier_similarities[i, :] = 1 - np.sort([distances[(classes[i], classes[j])] for j in range(len(classes))]) / max_dist
@@ -133,6 +139,7 @@ def test(model, test_loader, criterion, device, distances, classes, soft_labels=
     total = 0
     all_outputs = []
     all_targets = []
+    all_predictions = []  # New list to store predictions
 
     with torch.no_grad():
         for inputs, targets in test_loader:
@@ -152,13 +159,26 @@ def test(model, test_loader, criterion, device, distances, classes, soft_labels=
 
             all_outputs.append(outputs)
             all_targets.append(targets)
+            all_predictions.append(predicted)
 
     test_loss /= len(test_loader.dataset)
     test_accuracy = 100. * correct / total
 
     all_outputs = torch.cat(all_outputs, dim=0)
     all_targets = torch.cat(all_targets, dim=0)
+    all_predictions = torch.cat(all_predictions, dim=0)
     hdist_avg, hdist_top, hdist_mistakes, hprecision, hmAP, num_mistakes = calculate_hierarchical_metrics(all_outputs, all_targets, distances, classes)
+
+    # Save data for confusion matrix
+    confusion_matrix_data = {
+        'true_labels': all_targets.cpu().numpy().tolist(),
+        'predictions': all_predictions.cpu().numpy().tolist()
+    }
+
+    confusion_matrix_path = os.path.join(opts.out_folder, 'confusion_matrix_data.json')
+    with open(confusion_matrix_path, 'w') as f:
+        json.dump(confusion_matrix_data, f)
+
 
     return test_loss, test_accuracy, hdist_avg, hdist_top, hdist_mistakes, hprecision, hmAP, num_mistakes, total
 
