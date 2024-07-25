@@ -55,7 +55,7 @@ Where:
 - λ is the penalty factor (hyperparameter)
 - $D_A(y_i, ŷ_i)$ is the ancestral distance between the true class y_i and predicted class ŷ_i
 
-The ancestral distance D_A is calculated as:
+The ancestral distance $D_A$ is calculated as:
 
 $$D_A(y_i, \hat{y_i}) = |\text{ancestors}(y_i) \cup \text{ancestors}(\hat{y_i})| - |\text{ancestors}(y_i) \cap \text{ancestors}(\hat{y_i})|$$
 
