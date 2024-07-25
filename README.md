@@ -12,9 +12,9 @@ Due to Barz and Denzler [2] already performing experiments on the Cifar dataset,
 
 The architecture used is one of the ones tested in Barz and Denzler [2]. It's a Plainet-11, a VGG-like architecture introduced by Barz and Denzler [3] adapted for quicker experiments compared to the other deep neural networks tested (resnet-x, pyramidnet...). 
 
-<div style="display: flex; justify-content: center;">
+<p align="center">
   <img src="./assets/plain-11.png" alt="model architecture" style="height: 50vh;">
-</div>
+</p>
 
 While Barz and Denzler [2] achieved 74% accuracy on CIFAR-100, I've only managed around 55%. This difference is due to differences in the training process. Unlike Barz and Denzler's use of SGD with warm restarts and cosine annealing over 372 epochs, I trained with a fixed learning rate for only 25 epochs. This significant reduction in training time and lack of learning rate optimization likely accounts for the performance gap.
 
@@ -39,7 +39,9 @@ Key characteristics of this loss function include:
 
 Soft labels are implemented according to the formula [1]:
 
-$$y^{soft}_{A}(C)=\frac{exp(-\beta d(A,C))}{\sum_{B \in C}exp(-\beta d(B,C))}$$
+<p align="center">
+  <img src="https://latex.codecogs.com/png.latex?\dpi{90}&space;\bg_white&space;y^{soft}_{A}(C)=\frac{\exp(-\beta&space;d(A,C))}{\sum_{B&space;\in&space;C}\exp(-\beta&space;d(B,C))}" title="Soft Labels Formula" />
+</p>
 
 The soft labels approach uses a hyperparameter β to control label mass distribution. As β decreases from 30 to 4 (the experimental range), it shifts label mass away from the ground truth towards neighboring classes in the hierarchy. This affects the entropy of the label distribution, with β → ∞ corresponding to standard one-hot encoding, and β = 0 resulting in a uniform distribution across all classes.
 
@@ -55,14 +57,14 @@ Compute class embeddings $\phi(c_i)$ such that $\phi(c_i)^T \phi(c_j) = s_G(c_i,
 
 Image-to-Embedding Mapping:
 Train a CNN $\psi$ to map images onto these class embeddings using a correlation loss:
-$L_{\text{CORR}}(B) = \frac{1}{m} \sum_{b=1}^m (1 - \psi(I_b)^T \phi(c_{y_b}))$,
+$$L_{\text{CORR}}(B) = \frac{1}{m} \sum_{b=1}^m (1 - \psi(I_b)^T \phi(c_{y_b}))$$,
 where $B$ is a batch of $m$ images $I_b$ with labels $y_b$.
 
 ## Results
 
-<div style="display: flex; justify-content: center;">
+<p align="center">
   <img src="./assets/plot1_top1_error_vs_top1_hdist.png" alt="top1_error_vs_top1_dist" style="height: 40vh;">
-</div>
+</p>
 
 ![top5_20_error_vs_hdist](./assets/plot2_top1_error_vs_top5_20_hdist.png)
 
@@ -97,10 +99,6 @@ The Barz & Denzler method demonstrates a clear trade-off in hierarchical classif
 
 In summary, these results demonstrate that incorporating hierarchical information into the learning process can lead to significant improvements in the semantic quality of predictions, often with only a small trade-off in conventional accuracy metrics.
 
-## Appendix
-### Cifar wordNet based hierarchy
-![cifar hierarchy](./Cifar-Hierarchy/hierarchy.svg)
-
 ## References
 
 [1] **Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks**
@@ -117,3 +115,9 @@ In summary, these results demonstrate that incorporating hierarchical informatio
     Björn Barz and Joachim Denzler.
     International Conference on Pattern Recognition and Artificial Intelligence (ICPRAI), 2018.
     https://pub.inf-cv.uni-jena.de/pdf/Barz18:GoodTraining.pdf
+    
+## Appendix
+### Cifar wordNet based hierarchy
+![cifar hierarchy](./Cifar-Hierarchy/hierarchy.svg)
+
+
