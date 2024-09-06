@@ -1,7 +1,8 @@
 # Hierarchical Classification of Images
 
 ## Overview
-This project is based on the implementation described in the paper "Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks" (CVPR 2020) [1]. The base code has been adapted from the original work and extended to include additional experiments on learning rate schedulers and custom loss functions for hierarchical classification tasks.
+This project's base code has been adapted from the original work from the paper "Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks". IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2020 [1]. 
+the original source code: https://github.com/fiveai/making-better-mistakes
 
 ## Dependencies
 The main dependencies for this project are:
