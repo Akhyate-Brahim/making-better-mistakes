@@ -70,7 +70,8 @@ Three types of learning rate schedulers have been implemented:
 1. Cosine Annealing with Warm Restarts (SGDR): `--lr_schedule cosine`
 2. Cyclic Learning Rate: `--lr_schedule cyclic`
 3. Multi-Step Learning Rate: `--lr_schedule cutout`
- More in [./learning_rate](./learning_rate/)
+
+More in [./learning_rate](./learning_rate/)
 
  you can use the `--lr_schedule` argument to choose your learning rate
 ## Custom Loss Function
