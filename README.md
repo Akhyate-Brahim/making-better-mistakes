@@ -40,7 +40,7 @@ https://www.kaggle.com/datasets/fedesoriano/cifar100
 
 ## Running the Experiments
 ### NEF cluster
-To run experiments on the NEF cluster at INRIA, you need to submit jobs using a script. Here's an example of a job script:
+To run experiments on the NEF cluster, you need to submit jobs using a script. Here's an example of a job script:
 ```bash
 #!/bin/bash
 #
