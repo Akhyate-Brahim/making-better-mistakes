@@ -29,7 +29,7 @@ We use Conda to manage the environment. To set up the environment, follow these 
    ```
 4. Activate the environment:
    ```bash
-   conda activate my-env
+   source activate my-env
    ```
 
 ## Dataset
