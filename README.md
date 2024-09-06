@@ -25,11 +25,11 @@ We use Conda to manage the environment. To set up the environment, follow these 
 2. Clone this repository and navigate to the project directory.
 3. Create the environment using the provided `environment.yml` file:
    ```bash
-   conda env create -f environment.yml
+   conda env update -n my-env -f environment.yml
    ```
 4. Activate the environment:
    ```bash
-   conda activate better_mistakes
+   conda activate my-env
    ```
 
 ## Dataset
@@ -46,8 +46,8 @@ To run experiments on the NEF cluster, you need to submit jobs using a script. H
 #
 # Submission script for Soft labels embedding program
 module load gcc/9.2.0 conda/2021.11-python3.9 cuda/9.1 cudnn/7.0-cuda-9.1
-conda env update -n better-mistakes -f environment.yml
-source activate better-mistakes
+conda env update -n my-env -f environment.yml
+source activate my-env
 python model_train.py
 ```
 
