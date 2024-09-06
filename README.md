@@ -95,9 +95,9 @@ The SimpleHierarchyLoss combines fine-grained and coarse-grained classification 
 - `coarse_loss_ramp_epochs`: Number of epochs to gradually increase coarse-grained loss to full weight. 
   Default: 0
 
-$$
-\lambda_d.L_{CE_d}(y_d,\tilde y_d) + \lambda_M . L_{CE_M}(y_M,\tilde y_M)
-$$
+<p align="center">
+  <img src="./assets/custom_loss.png" alt="formula" style="height: 8vh;">
+</p>
 Example usage:
 ```bash
 python main.py --architecture ResNet18 --loss simple-hierarchy --lr_schedule cutout --epochs 180 --lambda_fine 1 --lambda_coarse 0.5 --coarse_loss_start_epoch 50 --coarse_loss_ramp_epochs 20 --fine_loss_start_epoch 0 --fine_loss_ramp_epochs 0
