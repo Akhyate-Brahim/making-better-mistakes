@@ -1,123 +1,113 @@
-# Comparative Analysis: Bertinetto et al.'s 'Making Better Mistakes' vs. Barz & Denzler's 'Hierarchy-based Image Embeddings'
+# Hierarchical Classification of Images
 
-## Dataset choice
+## Overview
+This project is based on the implementation described in the paper "Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks" (CVPR 2020) [1]. The base code has been adapted from the original work and extended to include additional experiments on learning rate schedulers and custom loss functions for hierarchical classification tasks.
 
-CIFAR-100 was chosen for all the experiments done for this comparison, due to its availability and its smaller size compared to the other datasets used in the two papers (ImageNet, iNaturalist'19). The hierarchy is extracted through a WordNet-based taxonomy proposed by Barz and Denzler [2] [cifar hierarchy](./Cifar-Hierarchy).
+## Dependencies
+The main dependencies for this project are:
+- Python 3.6
+- PyTorch 1.1.0
+- CUDA Toolkit 10.0
+- NumPy
+- TensorboardX
+- TensorFlow
+- NLTK
+- PyYAML
+- fastText (installed from GitHub)
+- conditional
 
-## Hierarchical structure
+Additional dependencies are listed in the `environment.yml` file.
 
-Due to Barz and Denzler [2] already performing experiments on the Cifar dataset, my task was to get Cifar to work on the code base of the making better mistakes paper [1]. To do that, we need to conform to the hierarchy structure used, which is an nltk Tree object in contrast to the child-parent dictionaries computed in the Semantic Embeddings paper. We also have to compute the LCA (lowest common ancestor) distances in order to compute the hierarchical loss, as well as for hierarchical metrics calculations. The scripts for this conversion are in [Cifar hierarchy scripts](./data/scripts_asis/).
+## Environment Setup
+We use Conda to manage the environment. To set up the environment, follow these steps:
 
-## Architecture used
+1. Ensure you have Anaconda or Miniconda installed.
+2. Clone this repository and navigate to the project directory.
+3. Create the environment using the provided `environment.yml` file:
+   ```bash
+   conda env create -f environment.yml
+   ```
+4. Activate the environment:
+   ```bash
+   conda activate better_mistakes
+   ```
 
-The architecture used is one of the ones tested in Barz and Denzler [2]. It's a Plainet-11, a VGG-like architecture introduced by Barz and Denzler [3] adapted for quicker experiments compared to the other deep neural networks tested (resnet-x, pyramidnet...). 
+## Dataset
+We use the CIFAR-100 dataset for image classification.
 
-<p align="center">
-  <img src="./assets/plain-11.png" alt="model architecture" style="height: 50vh;">
-</p>
+download from:
+https://www.kaggle.com/datasets/fedesoriano/cifar100
 
-While Barz and Denzler [2] achieved 74% accuracy on CIFAR-100, I've only managed around 55%. This difference is due to differences in the training process. Unlike Barz and Denzler's use of SGD with warm restarts and cosine annealing over 372 epochs, I trained with a fixed learning rate for only 25 epochs. This significant reduction in training time and lack of learning rate optimization likely accounts for the performance gap.
+## Running the Experiments
+### NEF cluster
+To run experiments on the NEF cluster at INRIA, you need to submit jobs using a script. Here's an example of a job script:
+```bash
+#!/bin/bash
+#
+# Submission script for Soft labels embedding program
+module load gcc/9.2.0 conda/2021.11-python3.9 cuda/9.1 cudnn/7.0-cuda-9.1
+conda env update -n better-mistakes -f environment.yml
+source activate better-mistakes
+python model_train.py
+```
 
-## Methods
+then to run this job :
+```bash
+oarsub -p "gpu='YES' and host='nefgpu51.inria.fr'" -l /nodes=1,walltime=24:00:00 -S ./script
+```
+Availabilities for each node are in :
+https://nef-frontal.inria.fr/monika
 
-### Hierarchical Cross Entropy (HXE)
+### Comparative Analysis: Bertinetto et al.'s 'Making Better Mistakes' vs. Barz & Denzler's 'Hierarchy-based Image Embeddings'
+the results and explanation of the analysis are in [./comparison](./comparison/)
+To run for example the hierarchical loss experience for a given α you can use the command:
+```bash
+python main.py --architecture plainnet --loss hierarchical-cross-entropy --epochs 180 --alpha 0.1
+```
 
-Hierarchical cross entropy is computed using the following formula [1]:
+### Learning Rate Schedulers
+Three types of learning rate schedulers have been implemented:
+1. Cosine Annealing with Warm Restarts (SGDR): `--lr_schedule cosine`
+2. Cyclic Learning Rate: `--lr_schedule cyclic`
+3. Multi-Step Learning Rate: `--lr_schedule cutout`
+ More in [./learning_rate](./learning_rate/)
 
-$$L_{HXE}(p,C) = -\sum_{l=0}^{h-1}{\lambda(C^{(l)})log(p(C^{(l)} \mid C^{(l+1)}))}$$
+ you can use the `--lr_schedule` argument to choose your learning rate
+## Custom Loss Function
+The SimpleHierarchyLoss combines fine-grained and coarse-grained classification losses, with controls for their relative importance and when they're introduced during training:
 
-- where $\lambda(C^{(l)})$ is the weight associated with the edge node $C^{(l+1)} \rightarrow C^{(l)}$
-- $\lambda(C) = exp(-\alpha h(C))$ where $\alpha$ is a parameter that controls the extent to which information is discounted down the hierarchy.
+- `lambda_fine`: Weight for the fine-grained loss (100 classes in CIFAR-100). 
+  Default: 1.0
 
-Key characteristics of this loss function include:
+- `lambda_coarse`: Weight for the coarse-grained loss (20 superclasses in CIFAR-100). 
+  Default: 1.0
 
-- The parameter $\alpha$ controls how much the model prioritizes hierarchical accuracy. Larger $\alpha$ values place more emphasis on avoiding mistakes between distant classes in the hierarchy.
-- When $\alpha$ is set to 0, HXE becomes equivalent to standard cross-entropy, treating all misclassifications equally regardless of hierarchical distance.
-- By adjusting $\alpha$, users can balance between optimizing for top-k accuracy and hierarchical accuracy. Higher $\alpha$ values tend to improve hierarchical metrics at the potential expense of top-k accuracy.
+- `fine_loss_start_epoch`: Epoch to start applying fine-grained loss. 
+  Default: 0
 
-### Soft Labels
+- `fine_loss_ramp_epochs`: Number of epochs to gradually increase fine-grained loss to full weight. 
+  Default: 0
 
-Soft labels are implemented according to the formula [1]:
+- `coarse_loss_start_epoch`: Epoch to start applying coarse-grained loss. 
+  Default: 0
 
-<p align="center">
-  <img src="https://latex.codecogs.com/png.latex?\dpi{90}&space;\bg_white&space;y^{soft}_{A}(C)=\frac{\exp(-\beta&space;d(A,C))}{\sum_{B&space;\in&space;C}\exp(-\beta&space;d(B,C))}" title="Soft Labels Formula" />
-</p>
+- `coarse_loss_ramp_epochs`: Number of epochs to gradually increase coarse-grained loss to full weight. 
+  Default: 0
 
-The soft labels approach uses a hyperparameter β to control label mass distribution. As β decreases from 30 to 4 (the experimental range), it shifts label mass away from the ground truth towards neighboring classes in the hierarchy. This affects the entropy of the label distribution, with β → ∞ corresponding to standard one-hot encoding, and β = 0 resulting in a uniform distribution across all classes.
+$$
+\lambda_d.L_{CE_d}(y_d,\tilde y_d) + \lambda_M . L_{CE_M}(y_M,\tilde y_M)
+$$
+Example usage:
+```bash
+python main.py --architecture ResNet18 --loss simple-hierarchy --lr_schedule cutout --epochs 180 --lambda_fine 1 --lambda_coarse 0.5 --coarse_loss_start_epoch 50 --coarse_loss_ramp_epochs 20 --fine_loss_start_epoch 0 --fine_loss_ramp_epochs 0
+```
 
-### Barz & Denzler Method
 
-The Barz & Denzler method creates class embeddings based on semantic similarity in a hierarchy [2].
-
-Semantic Similarity Measure:
-$s_G(u,v) = 1 - d_G(u,v)$, where $d_G(u,v) = \frac{\text{height}(\text{lcs}(u,v))}{\max_{w \in V} \text{height}(w)}$ and $\text{lcs}(u,v)$ is the lowest common subsumer of $u$ and $v$.
-
-Class Embedding Algorithm:
-Compute class embeddings $\phi(c_i)$ such that $\phi(c_i)^T \phi(c_j) = s_G(c_i, c_j)$ and $|\phi(c_i)| = 1$.
-
-Image-to-Embedding Mapping:
-Train a CNN $\psi$ to map images onto these class embeddings using a correlation loss:
-$$L_{\text{CORR}}(B) = \frac{1}{m} \sum_{b=1}^m (1 - \psi(I_b)^T \phi(c_{y_b}))$$,
-where $B$ is a batch of $m$ images $I_b$ with labels $y_b$.
 
 ## Results
-
-<p align="center">
-  <img src="./assets/plot1_top1_error_vs_top1_hdist.png" alt="top1_error_vs_top1_dist" style="height: 40vh;">
-</p>
-
-![top5_20_error_vs_hdist](./assets/plot2_top1_error_vs_top5_20_hdist.png)
-
-All the hierarchical methods provide better results hierarchy-wise than the standard cross entropy. Let's examine the performance of each method:
-
-- Standard Cross Entropy
-
-The standard cross entropy serves as our baseline. While it achieves competitive top-1 accuracy, it performs the worst in terms of hierarchical metrics. This is expected, as it doesn't take the class hierarchy into account during training.
-
-- Hierarchical Cross Entropy (HXE)
-
-HXE shows a clear trade-off between top-1 accuracy and hierarchical performance as α increases. With low α values, it behaves similarly to standard cross entropy. As α increases, we observe improved hierarchical metrics at the cost of some top-1 accuracy. This method provides a flexible way to balance between conventional and hierarchical accuracy.
-
-- Soft Labels
-
-The soft labels approach demonstrates a similar trade-off to HXE, controlled by the β parameter. As β decreases, we see improved hierarchical performance with some loss in top-1 accuracy. This method appears to achieve a good balance, especially for mid-range β values, offering improvements in hierarchical metrics without sacrificing too much top-1 accuracy.
-
-- Barz & Denzler Method
-
-The Barz & Denzler method demonstrates a clear trade-off in hierarchical classification tasks. While it achieves lower test accuracy compared to the soft labels approach, it shows competitive performance on hierarchical metrics. This makes the method particularly suitable for scenarios where hierarchical performance is prioritized over conventional accuracy.
-
-- Comparative Analysis
-
-1. Top-1 Error vs. Top-1 Hierarchical Distance: All hierarchical methods show improvements over standard cross entropy. HXE and soft labels offer a spectrum of trade-offs, while Barz & Denzler provides a fixed point with strong hierarchical performance but higher top-1 error.
-
-2. Top-5 and Top-20 Performance: The improvements in hierarchical metrics are even more pronounced when considering top-5 and top-20 predictions. This suggests that these methods are particularly effective at pushing semantically similar classes higher in the ranking, even if they don't always get the top-1 prediction correct.
-
-3. Method Selection: The choice between these methods depends on the specific requirements of the task:
-   - If maintaining high top-1 accuracy is crucial, soft labels or HXE with low α/high β values are preferable.
-   - For applications where minimizing semantic mistakes is paramount, Barz & Denzler or HXE/soft labels with high α/low β values are more suitable.
-   - For a balance between conventional and hierarchical accuracy, mid-range parameters for HXE or soft labels offer good compromises.
-
-In summary, these results demonstrate that incorporating hierarchical information into the learning process can lead to significant improvements in the semantic quality of predictions, often with only a small trade-off in conventional accuracy metrics.
+Results of the experiments, including training and validation losses, accuracies, and hierarchical metrics, are saved in JSON format in the specified output folder. Each epochs results are also saved.
 
 ## References
+[1] Luca Bertinetto*, Romain Mueller*, Konstantinos Tertikas, Sina Samangooei, Nicholas A. Lord*. "Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks". IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2020. Source code: https://github.com/fiveai/making-better-mistakes
 
-[1] **Making Better Mistakes: Leveraging Class Hierarchies with Deep Networks**
-    Luca Bertinetto*, Romain Mueller*, Konstantinos Tertikas, Sina Samangooei, Nicholas A. Lord*.
-    IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2020.
-    Source code: https://github.com/fiveai/making-better-mistakes
-
-[2] **Hierarchy-based Image Embeddings for Semantic Image Retrieval**
-    Björn Barz and Joachim Denzler.
-    IEEE Winter Conference on Applications of Computer Vision (WACV), 2019.
-    Source code: https://github.com/cvjena/semantic-embeddings
-
-[3] **Deep Learning is not a Matter of Depth but of Good Training**
-    Björn Barz and Joachim Denzler.
-    International Conference on Pattern Recognition and Artificial Intelligence (ICPRAI), 2018.
-    https://pub.inf-cv.uni-jena.de/pdf/Barz18:GoodTraining.pdf
-    
-## Appendix
-### Cifar wordNet based hierarchy
-![cifar hierarchy](./Cifar-Hierarchy/hierarchy.svg)
-
-
+[2] Björn Barz and Joachim Denzler. "Hierarchy-based Image Embeddings for Semantic Image Retrieval". IEEE Winter Conference on Applications of Computer Vision (WACV), 2019. Source code: https://github.com/cvjena/semantic-embeddings
